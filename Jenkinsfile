@@ -12,7 +12,7 @@ pipeline{
                 timeout(time: 10, unit: 'MINUTES')
             }
             environment {
-                DOCKER_TAG = "${GIT_BRANCH}${BUILD_NUMBER}"
+                DOCKER_TAG = "${GIT_BRANCH.tokenize('/').pop()}-${BUILD_NUMBER}"
             }
             steps{
                 echo "========Buiding A New Docker Image========"
