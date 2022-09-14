@@ -16,7 +16,7 @@ pipeline{
             }
             steps{
                 echo "========Buiding A New Docker Image========"
-                sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                sh "docker build --tag ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
                 echo "========Pushing Docker Image To Docker Hub========"
                 withCredentials([usernamePassword(credentialsId: 'docker-hub', 
