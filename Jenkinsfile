@@ -60,7 +60,7 @@ pipeline{
                             DOCKER_USERNAME: "${DOCKER_USERNAME}",
                             DOCKER_PASSWORD: "${DOCKER_PASSWORD}",
                             BRANCH: "${GIT_BRANCH.tokenize('/')[-1]}",
-                            SSH_KEY: "${SSH_KEY}"
+                            ansible_ssh_private_key_file: "${SSH_KEY}"
                         ]
                     )
                 }
