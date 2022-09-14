@@ -1,7 +1,5 @@
 pipeline{
-    agent{
-        label none
-    }
+    agent none
     environment {
         DOCKER_IMAGE="tomtpc/nginx"
     }
@@ -14,11 +12,11 @@ pipeline{
                 timeout(time: 10, unit: 'MINUTES')
             }
             environment {
-                DOCKER_TAG = "${GIT_BRANCH}-${BUILD_NUMBER}"
+                DOCKER_TAG = "${GIT_BRANCH.tokenize('/').pop()}-${BUILD_NUMBER}"
             }
             steps{
                 echo "========Buiding A New Docker Image========"
-                sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                sh "docker build --tag ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
                 echo "========Pushing Docker Image To Docker Hub========"
                 withCredentials([usernamePassword(credentialsId: 'docker-hub', 
@@ -49,17 +47,20 @@ pipeline{
             steps{
                 withCredentials([usernamePassword(credentialsId: 'docker-hub', 
                                                   usernameVariable: 'DOCKER_USERNAME' , 
-                                                  passwordVariable: 'DOCKER_PASSWORD')]) 
+                                                  passwordVariable: 'DOCKER_PASSWORD'),
+                                file(credentialsId: 'web-pki', variable: 'SSH_KEY')]) 
                 {
-                    ansbilePlaybook(
+                    ansiblePlaybook(
                         credentialsId: 'private_key',
                         playbook: 'playbook.yml',
                         inventory: 'hosts',
-                        become: 'yes'
+                        become: 'yes', 
+                        becomeUser: 'root',
                         extraVars: [
                             DOCKER_USERNAME: "${DOCKER_USERNAME}",
                             DOCKER_PASSWORD: "${DOCKER_PASSWORD}",
-                            BRANCH: "${GIT_BRANCH.tokenize('/')[-1]}"
+                            BRANCH: "${GIT_BRANCH.tokenize('/')[-1]}",
+                            ansible_ssh_private_key_file: "${SSH_KEY}"
                         ]
                     )
                 }
