@@ -65,6 +65,14 @@ pipeline{
                     )
                 }
             }
+            post{
+                success{
+                    echo "========Deploy to Servers Successfully========"
+                }
+                failure{
+                    echo "========Deploy to Servers failed========"
+                }
+            }
         }
     }
     post{
