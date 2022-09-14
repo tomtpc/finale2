@@ -47,7 +47,8 @@ pipeline{
             steps{
                 withCredentials([usernamePassword(credentialsId: 'docker-hub', 
                                                   usernameVariable: 'DOCKER_USERNAME' , 
-                                                  passwordVariable: 'DOCKER_PASSWORD')]) 
+                                                  passwordVariable: 'DOCKER_PASSWORD'),
+                                file(credentialsId: 'web-pki', variable: 'SSH_KEY')]) 
                 {
                     ansiblePlaybook(
                         credentialsId: 'private_key',
@@ -58,7 +59,8 @@ pipeline{
                         extraVars: [
                             DOCKER_USERNAME: "${DOCKER_USERNAME}",
                             DOCKER_PASSWORD: "${DOCKER_PASSWORD}",
-                            BRANCH: "${GIT_BRANCH.tokenize('/')[-1]}"
+                            BRANCH: "${GIT_BRANCH.tokenize('/')[-1]}",
+                            ansible_ssh_private_key_file: "${SSH_KEY}"
                         ]
                     )
                 }
