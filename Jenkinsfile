@@ -1,7 +1,5 @@
 pipeline{
-    agent{
-        label none
-    }
+    agent none
     environment {
         DOCKER_IMAGE="tomtpc/nginx"
     }
